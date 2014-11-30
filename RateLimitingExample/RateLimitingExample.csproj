@@ -54,12 +54,23 @@
     <Reference Include="ServiceStack.ServiceInterface">
       <HintPath>..\libs\ServiceStack.ServiceInterface.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\libs\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppHost.cs" />
-    <Compile Include="SimpleService.cs" />
+    <Compile Include="SimpleQuotaProvider.cs" />
+    <Compile Include="SimpleQuotaPlugin.cs" />
+    <Compile Include="SimpleUsageStorer.cs" />
+    <Compile Include="Tests\QuotaProviderTest.cs" />
+    <Compile Include="Tests\UsageStorerTest.cs" />
+    <Compile Include="Interfaces\IQuotaProvider.cs" />
+    <Compile Include="Interfaces\IUsageStorer.cs" />
+    <Compile Include="Services\SimpleService.cs" />
+    <Compile Include="Tests\IntegrationTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -69,4 +80,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Tests\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>
