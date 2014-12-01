@@ -14,12 +14,6 @@ namespace RateLimitingExample
 			storer = new SimpleUsageStorer (2);
 		}
 
-		[TearDown] 
-		public void Cleanup()
-		{
-			storer = null;
-		}
-
 		[Test]
 		public void GetInvalidUsageTest()
 		{

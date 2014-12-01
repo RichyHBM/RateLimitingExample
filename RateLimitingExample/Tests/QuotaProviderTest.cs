@@ -14,12 +14,6 @@ namespace RateLimitingExample
 			provider = new SimpleQuotaProvider ();
 		}
 
-		[TearDown] 
-		public void Cleanup()
-		{
-			provider = null;
-		}
-
 		[Test]
 		public void AuthenticateUserTest ()
 		{

@@ -14,6 +14,7 @@ namespace RateLimitingExample
 		[SetUp] 
 		public void Init()
 		{
+			//For testing purposes the quota limit will reset every 5 seconds
 			host = new AppHost( 5 );
 			host.Init( );
 			host.Start( "http://*:8080/" );
@@ -24,7 +25,6 @@ namespace RateLimitingExample
 		{
 			host.Stop();
 			host.Dispose ();
-			host = null;
 		}
 
 		[Test]

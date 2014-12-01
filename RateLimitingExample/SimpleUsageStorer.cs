@@ -6,41 +6,62 @@ namespace RateLimitingExample
 {
 	public class SimpleUsageStorer : IUsageStorer
 	{
-		Timer timer;
+		int TimerTime;
+
 		//Ideally you would use redis or some other store mechanism
-		Dictionary<string, int> usageList = new Dictionary<string, int>();
+		Dictionary<string, IndividualQuotaUsage> usageList = new Dictionary<string, IndividualQuotaUsage>();
 
 		public SimpleUsageStorer (int TimeInSeconds)
 		{
-			timer = new Timer (TimeInSeconds * 1000);
-			timer.Elapsed += WipeUsages;
-			timer.AutoReset = true;
-			timer.Start ();
+			TimerTime = TimeInSeconds;
 		}
 
 		public int GetCurrentUsage (string userName)
 		{
-			lock (usageList) {
-				int usage = 0;
-				usageList.TryGetValue (userName, out usage);
-				return usage;
-			}
+			int usage = 0;
+
+			IndividualQuotaUsage userUsage = null;
+			usageList.TryGetValue (userName, out userUsage);
+
+			if (userUsage != null && userUsage.Active)
+				usage = userUsage.Usage;
+
+			return usage;
 		}
 
 		public bool StoreNewUsage (string userName, int usageCount)
 		{
-			lock (usageList) {
-				usageList [userName] = usageCount;
-				return true;
+			if (usageList.ContainsKey (userName) && usageList [userName].Active) {
+				usageList [userName].Usage = usageCount;
+			} else {
+				usageList [userName] = new IndividualQuotaUsage (TimerTime);
+				usageList [userName].Usage = usageCount;
+			}
+			return true;
+		}
+
+		//Have a class for each user with its own timer, that way each user can have an individual quota start time
+		class IndividualQuotaUsage{
+
+			public int Usage = 0;
+			Timer timer;
+			public bool Active { get; private set;}
+
+			public IndividualQuotaUsage(int TimeInSeconds)
+			{
+				timer = new Timer (TimeInSeconds * 1000);
+				timer.Elapsed += TimerFinished;
+				timer.AutoReset = false;
+				timer.Start ();
+				Active = true;
+			}
+
+			void TimerFinished(object sender, ElapsedEventArgs e)
+			{
+				Active = false;
 			}
 		}
 
-		void WipeUsages(object sender, ElapsedEventArgs e)
-		{
-			lock (usageList) {
-				usageList.Clear ();
-			}
-		}
 	}
 }
 
